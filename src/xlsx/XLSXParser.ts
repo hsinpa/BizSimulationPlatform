@@ -11,5 +11,7 @@ export class XLSXParser {
         let workbook = xlsx.readFile(this.filePath);
 
         console.log(workbook.Workbook.Names);
+        console.log(workbook.Sheets);
+
     }
 }

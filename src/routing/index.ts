@@ -11,7 +11,7 @@ module.exports =  (router:any, rootPath:string) => {
   });
 
   router.get('/excel', async function (ctx:any, next:any) {
-    let excelFilePath : string = path.join(rootPath, 'public', 'assets','excel', 'AdvantexeSimExample.xlsx');
+    let excelFilePath : string = path.join(rootPath, 'public', 'assets','excel', 'HelloWorld.xlsx');
     console.log(excelFilePath);
 
     let xlsx = new XLSXParser(excelFilePath);

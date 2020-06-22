@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "xlsx": "^0.16.2",
-    "fs-path": "*",
     "handlebars": "*",
     "koa": "*",
     "koa-bodyparser": "*",

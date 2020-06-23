@@ -5,11 +5,45 @@ export class Tokenizer {
 
     public Parse(p_raw_expression : string) {
         let tokens : Token[] = [];
-        let numberBuffer : string[] = [];
-        let letterBuffer : string[] = [];
+        let numberBuffer : Array<string> = [];
+        let letterBuffer : Array<string> = [];
 
         p_raw_expression = p_raw_expression.replace(StaticDataSet.IgnoreSpace, "");
         let rawExpLength = p_raw_expression.length;
+
+//#region Helper Method
+        let RetrieveNumberBuffer = () : Token[] => {
+            var r_tokens : Token[] = [];
+    
+            if (numberBuffer.length > 0) {
+                let fullDigitalString = numberBuffer.join("");
+    
+                r_tokens.push(new Token(fullDigitalString, Types.Number));
+            }
+    
+            numberBuffer = [];
+    
+            return r_tokens;
+        }
+    
+        let RetrieveLetterBuffer = () : Token[] => {
+            let length = letterBuffer.length;
+            let r_tokens : Token[] = [] ;
+    
+            for (let i = 0; i < length; i++) {
+                r_tokens.push(new Token(letterBuffer[i], Types.Variable));
+    
+                //Multiply letter variable together
+                if (i < length - 1) {
+                    r_tokens.push(new Token("*", Types.Operator));
+                }
+            }
+    
+            letterBuffer = [];
+    
+            return r_tokens;
+        }
+//#endregion
 
         for (let i = 0; i < rawExpLength; i++) {
             let part = p_raw_expression[i];
@@ -25,8 +59,9 @@ export class Tokenizer {
             }
 
             if (this.IsVariable(part)) {
+
                 if (numberBuffer.length > 0) {
-                    tokens.concat(this.RetrieveNumberBuffer(numberBuffer));
+                    tokens = tokens.concat(RetrieveNumberBuffer());
                     tokens.push(new Token("*", Types.Operator));
                 }
 
@@ -49,8 +84,8 @@ export class Tokenizer {
                     }
                 }
 
-                tokens.concat(this.RetrieveNumberBuffer(numberBuffer));
-                tokens.concat(this.RetrieveNumberBuffer(letterBuffer));
+                tokens = tokens.concat(RetrieveNumberBuffer());
+                tokens = tokens.concat(RetrieveLetterBuffer());
 
                 tokens.push(new Token(part, Types.Operator));
                 continue;
@@ -62,7 +97,7 @@ export class Tokenizer {
                     tokens.push(new Token(this.GetFullLetterString(letterBuffer), Types.Function));
                     letterBuffer = [];
                 } else if (numberBuffer.length > 0) {
-                    tokens.concat(this.RetrieveNumberBuffer(numberBuffer));
+                    tokens = tokens.concat(RetrieveNumberBuffer());
                     tokens.push(new Token("*", Types.LeftParenthesis));
                 }
                 tokens.push(new Token(part, Types.LeftParenthesis));
@@ -71,24 +106,24 @@ export class Tokenizer {
             }
             
             if (this.IsRightParenthesis(part) ) {
-                tokens.concat(this.RetrieveLetterBuffer(letterBuffer));
-                tokens.concat(this.RetrieveNumberBuffer(numberBuffer));
+                tokens = tokens.concat(RetrieveLetterBuffer());
+                tokens = tokens.concat(RetrieveNumberBuffer());
                 
                 tokens.push(new Token(part, Types.RightParenthesis));
                 continue;
             }
 
             if (this.IsComma(part)) {
-                tokens.concat(this.RetrieveNumberBuffer(numberBuffer));
-                tokens.concat(this.RetrieveLetterBuffer(letterBuffer));
+                tokens = tokens.concat(RetrieveNumberBuffer());
+                tokens = tokens.concat(RetrieveLetterBuffer());
                 
                 tokens.push(new Token(part, Types.ArgumentSeperator));
             }
         }
 
         //If any variable left, concat into token array
-        tokens.concat(this.RetrieveNumberBuffer(numberBuffer));
-        tokens.concat(this.RetrieveLetterBuffer(letterBuffer));
+        tokens = tokens.concat(RetrieveNumberBuffer());
+        tokens = tokens.concat(RetrieveLetterBuffer());
 
         numberBuffer = null;
         letterBuffer = null;
@@ -97,41 +132,8 @@ export class Tokenizer {
     }
 
 //#region Private Helper Method
-
     private GetFullLetterString(letterBuffer : string[]) : string{
         return letterBuffer.join("");
-    }
-
-    private RetrieveNumberBuffer(numberBuffer : string[]) : Token[] {
-        var r_tokens : Token[] = [];
-
-        if (numberBuffer.length > 0) {
-            let fullDigitalString = numberBuffer.join("");
-
-            r_tokens.push(new Token(fullDigitalString, Types.Number));
-        }
-
-        numberBuffer = [];
-
-        return r_tokens;
-    }
-
-    private RetrieveLetterBuffer(letterBuffer : string[]) : Token[] {
-        let length = letterBuffer.length;
-        let r_tokens : Token[] = [] ;
-
-        for (let i = 0; i < length; i++) {
-            r_tokens.push(new Token(letterBuffer[i], Types.Variable));
-
-            //Multiply letter variable together
-            if (i < length - 1) {
-                r_tokens.push(new Token("*", Types.Operator));
-            }
-        }
-
-        letterBuffer = [];
-
-        return r_tokens;
     }
 //#endregion 
 

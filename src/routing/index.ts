@@ -1,5 +1,8 @@
 import {XLSXParser} from '../xlsx/XLSXParser';
+import {MathParserJS} from '../MathParserJS/MathParserJS';
+
 const path = require('path')
+const mathParser = new MathParserJS();
 
 module.exports =  (router:any, rootPath:string) => {
   router.get('/', async function (ctx:any, next:any) {
@@ -19,6 +22,14 @@ module.exports =  (router:any, rootPath:string) => {
     xlsx.Execute();
 
     ctx.body = rootPath;
+
+    return ctx;
+  });
+
+  router.get('/mathparser/:formula', async function (ctx:any, next:any) {
+    mathParser.Calculate(ctx.params.formula);
+    
+    ctx.body = "Something good";
 
     return ctx;
   });

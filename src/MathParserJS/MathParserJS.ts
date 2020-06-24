@@ -14,22 +14,20 @@ export class MathParserJS {
         this._astTreeParser = new ASTTreeParser();
     }
 
-    public Calculate(p_raw_expression:string) {
+    public Calculate(p_raw_expression:string) : number {
 
         p_raw_expression = p_raw_expression.toLowerCase();
 
-        console.log(p_raw_expression);
-
         let tokens = this._tokenizer.Parse(p_raw_expression);
-        //console.log(tokens);
+        console.log(tokens);
 
         let organzieTokens = this._shuntingYard.Parse(tokens);
 
         console.log(organzieTokens);
 
         let answer = this._astTreeParser.Parse(organzieTokens);
-
-        console.log("Answer " + answer);
+        
+        return answer;
     }
 
 }

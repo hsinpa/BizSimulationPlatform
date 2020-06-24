@@ -5,7 +5,8 @@ export enum Types {
     LeftParenthesis,
     RightParenthesis,
     ArgumentSeperator,
-    Function
+    Function,
+    FunctionEnd
 };
 
 export class Token {

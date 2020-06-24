@@ -27,9 +27,11 @@ module.exports =  (router:any, rootPath:string) => {
   });
 
   router.get('/mathparser/:formula', async function (ctx:any, next:any) {
-    mathParser.Calculate(ctx.params.formula);
+    console.time();
+    let answer = mathParser.Calculate(ctx.params.formula);
+    console.timeEnd();
     
-    ctx.body = "Something good";
+    ctx.body = (`Answer ${answer}`);
 
     return ctx;
   });

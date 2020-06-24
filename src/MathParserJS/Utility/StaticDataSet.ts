@@ -8,7 +8,8 @@ export const StaticDataSet = {
 
     RexIsNum : RegExp("\\d"),
     RexIsOperator : RegExp("\\+|-|\\*|\\/|\\^"),
-    RexIsVariable : RegExp("[a-z]")
+    RexIsVariable : RegExp("[a-z]"),
+    FunctionEndSign : ";"
 }
 
 export const AssociativityDict: { [id: string] : string; } = {
@@ -47,13 +48,15 @@ export const FunctionLookUpTable : { [id: string] : number; } = {
     "sign": 1,
 
     "step" : 2,
-    "min": 2,
-    "max": 2,
     "rand": 2,
     "atan2": 2,
     "pow": 2,
 
     "clamp": 3,
     "lerp" :3,
-    "smoothstep": 3
+    "smoothstep": 3,
+
+    //Customize Array size
+    "min": -1,
+    "max": -1,
 };

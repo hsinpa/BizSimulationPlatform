@@ -1,13 +1,13 @@
 import {Tokenizer} from '../Token/Tokenizer';
 import {Token, Types} from '../Token/Token';
 import {Stack} from 'typescript-collections';
-import {FunctionLookUpTable} from '../Utility/StaticDataSet';
+import {FunctionLookUpTable, StaticDataSet} from '../Utility/StaticDataSet';
 import {ComputeOperatorToken, ComputeFunctionToken} from '../Utility/MathOpCollection';
 
 export class ASTTreeParser {
 
     public Parse(shunting_tokens : Token[]) : number {
-        let outputStack = new Stack<number>();
+        let outputStack = new Stack<any>();
 
         try {
             let tokenLength = shunting_tokens.length;
@@ -15,7 +15,12 @@ export class ASTTreeParser {
             for (let i = 0; i < tokenLength; i++) {
                 let t  = shunting_tokens[i];
 
-                if (t._type == Types.Number)
+                //For User Define Function size
+                if (t._type == Types.FunctionEnd) {
+                    outputStack.add(t._value);
+                }
+
+                else if (t._type == Types.Number)
                     outputStack.add(parseFloat(t._value));
                 else if (t._type == Types.Operator)
                 {
@@ -27,11 +32,27 @@ export class ASTTreeParser {
                 else if (t._type == Types.Function) {
                     if (FunctionLookUpTable.hasOwnProperty(t._value))
                     {
-                        let inputArray : number[] = new Array(FunctionLookUpTable[t._value]);
+                        let inputLength = FunctionLookUpTable[t._value];
+                        let inputArray : number[] = new Array();
 
-                        for (let k = 0; k < inputArray.length; k++) {
-                            inputArray[k] = outputStack.pop();
+                        //User define size
+                        if (inputLength == -1) {
+                            while (true) {
+                                if (outputStack.peek() != StaticDataSet.FunctionEndSign) {
+
+                                    inputArray.push(outputStack.pop());
+
+                                } else {
+                                    break;   
+                                }
+                            }
+                        } else {
+                            for (let k = 0; k < inputLength; k++)
+                                inputArray[k] = outputStack.pop();
                         }
+                        
+                        //Pop out the FunctionEnd sign
+                        outputStack.pop();
 
                         inputArray = inputArray.reverse();
 

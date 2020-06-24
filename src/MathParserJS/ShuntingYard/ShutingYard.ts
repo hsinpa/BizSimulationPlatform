@@ -1,7 +1,7 @@
 import {Tokenizer} from '../Token/Tokenizer';
 import {Token, Types} from '../Token/Token';
 import {Stack} from 'typescript-collections';
-import {AssociativityDict, PrecedenceDict} from '../Utility/StaticDataSet';
+import {AssociativityDict, PrecedenceDict, StaticDataSet} from '../Utility/StaticDataSet';
 
 export class ShuntingYard {
     public Parse(p_tokens : Token[]) : Token[] {
@@ -69,6 +69,11 @@ export class ShuntingYard {
             //if the token is a left paren (i.e. "("), then:
             else if (t._type == Types.LeftParenthesis)
             {
+
+                if (operatorStack.peek()._type == Types.Function) {
+                    outputQueue.push(new Token(StaticDataSet.FunctionEndSign, Types.FunctionEnd));
+                }
+
                 operatorStack.add(t);
             }
 

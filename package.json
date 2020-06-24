@@ -27,6 +27,7 @@
     "koa-router": "*",
     "koa-static": "^5.0.0",
     "koa-views": "*",
+    "microjob": "^0.7.0",
     "mkdirp": "*",
     "nodemon": "*",
     "request": "*",

@@ -17,9 +17,9 @@ module.exports =  (router:any, rootPath:string) => {
     let excelFilePath : string = path.join(rootPath, 'public', 'assets','excel', 'HelloWorld.xlsx');
     console.log(excelFilePath);
 
-    let xlsx = new XLSXParser(excelFilePath);
+    let xlsx = new XLSXParser();
 
-    xlsx.Execute();
+    xlsx.Execute(excelFilePath);
 
     ctx.body = rootPath;
 

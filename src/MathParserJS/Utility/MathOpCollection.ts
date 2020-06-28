@@ -24,6 +24,53 @@ export function ComputeOperatorToken(token : Token, leftInput : number, rightInp
     }
 }
 
+export function AnalyzeStringOperator(p_operator : string, p_value : number, self_value : number) : boolean{
+    let isValid = false;
+    switch (p_operator)
+    {
+        case ">":
+            isValid = self_value > p_value;
+            break;
+
+        case ">=":
+            isValid = self_value >= p_value;
+            break;
+
+        case "<=":
+            isValid = self_value <= p_value;
+            break;
+
+        case "<":
+            isValid = self_value < p_value;
+            break;
+
+        case "=":
+            isValid = self_value == p_value;
+            break;
+
+        case "!=":
+            isValid = self_value != p_value;
+            break;
+    }
+
+    return isValid;
+}
+
+function ParseLogicOperation(p_raw_expression : string) : boolean {
+    let c_varaibles = p_raw_expression.split(' ');
+    let startIndex = 0;
+
+    //Allow space between &|
+    if (c_varaibles[0] == " " || c_varaibles[0] == "")
+        startIndex = 1;
+
+    let base_value = parseFloat(c_varaibles[startIndex]);
+    let operator_string = c_varaibles[startIndex + 1];
+    let c_value = parseInt(c_varaibles[startIndex + 2]);
+
+    return AnalyzeStringOperator(operator_string, c_value, base_value);
+}
+
 export function ComputeFunctionToken(token : Token, input : number[]) : number
 {
     switch (token._value)
@@ -98,6 +145,11 @@ export function ComputeFunctionToken(token : Token, input : number[]) : number
             return x*x*(3 - 2*x);
 
             //#endregion
+
+        case "if": {
+
+        }
+        break;
 
         default:
             return 0;

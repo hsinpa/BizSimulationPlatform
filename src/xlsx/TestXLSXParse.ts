@@ -14,24 +14,27 @@ export class TestXLSXParser {
     public ExecuteAllTestCase() {
         this.TestMultiVariableSheetName('zTurnFreeLancer');
         this.TestMultiVariableSheetNameArray('zTurnFreeLancer');
-
+        this.TestSimpleFunction('DataSheet!G8');
     }
 
     public TestMultiVariableSheetName(VariableName : string) {
         let nameDataResult = this.XLSXParser.SearchNameData(VariableName);
 
-        let variableResult = this.XLSXParser.SearchVariable(nameDataResult, 'DataSheet', "D8");
-        
-        console.log("nameDataResult " + nameDataResult);
-        
-        console.log("variableResult " + variableResult);
+        let variableResult = this.XLSXParser.SearchVariable(nameDataResult, 'DataSheet', "D8");        
     }
     
     public TestMultiVariableSheetNameArray(VariableName : string) {
         let nameDataResult = this.XLSXParser.SearchNameData(VariableName);
 
-        let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");
+        let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");                
+    }
+
+    public TestSimpleFunction(VariableName : string) {
+        console.log(VariableName);
+
+        let variableResult = this.XLSXParser.SearchVariable(VariableName, null, "G8");        
+
+        //let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");
                 
-        console.log(variableResult);
     }
 } 

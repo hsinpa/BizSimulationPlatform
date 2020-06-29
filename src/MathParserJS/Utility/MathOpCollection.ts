@@ -24,7 +24,7 @@ export function ComputeOperatorToken(token : Token, leftInput : number, rightInp
     }
 }
 
-export function AnalyzeStringOperator(p_operator : string, p_value : number, self_value : number) : boolean{
+export function AnalyzeStringOperator(p_operator : string, p_value : number, self_value : number) : number{
     let isValid = false;
     switch (p_operator)
     {
@@ -53,7 +53,7 @@ export function AnalyzeStringOperator(p_operator : string, p_value : number, sel
             break;
     }
 
-    return isValid;
+    return isValid ? 1 : 0;
 }
 
 function ParseLogicOperation(p_raw_expression : string) : boolean {
@@ -68,7 +68,7 @@ function ParseLogicOperation(p_raw_expression : string) : boolean {
     let operator_string = c_varaibles[startIndex + 1];
     let c_value = parseInt(c_varaibles[startIndex + 2]);
 
-    return AnalyzeStringOperator(operator_string, c_value, base_value);
+    return AnalyzeStringOperator(operator_string, c_value, base_value) == 1;
 }
 
 export function ComputeFunctionToken(token : Token, input : number[]) : number
@@ -144,12 +144,12 @@ export function ComputeFunctionToken(token : Token, input : number[]) : number
             var x = Math.max(0, Math.min(1, (input[0]-input[1])/(input[2]-input[1])));
             return x*x*(3 - 2*x);
 
-            //#endregion
-
-        case "if": {
-
+        case "If": {
+            return (input[0] == 1 ? input[1] : input[2]);
         }
         break;
+        //#endregion
+
 
         default:
             return 0;

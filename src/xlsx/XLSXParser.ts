@@ -1,10 +1,14 @@
 import * as xlsx from 'xlsx';
 import {Dictionary} from 'typescript-collections';
+import {MathParserJS} from '../MathParserJS/MathParserJS'
+import { Types, Token } from '../MathParserJS/Token/Token';
+import {FunctionLookUpTable} from '../MathParserJS/Utility/StaticDataSet';
+import {ArrayInsert, ArrayRemove} from '../Other/UtilityMethod';
 
 interface ColumnInfo {
     t: string,
     v: any,
-    f: string,
+    f: string
 }
 
 interface ColumnInfoArray {
@@ -25,9 +29,11 @@ export class XLSXParser {
 
     private workbook : xlsx.WorkBook;
     private NameRangeDict : Dictionary<string, string>;
+    private mathParserJS : MathParserJS;
 
     public constructor() { 
         this.NameRangeDict = new Dictionary<string, string>();
+        this.mathParserJS = new MathParserJS();
     }
 
     public Execute(filePath: string) {
@@ -52,9 +58,14 @@ export class XLSXParser {
             console.log(nameRangeArray[i]);
         }
     }
-
     
     public FilterDirectoryInfo(target : string, directory:string) : DirectoryInfo {
+
+        let nameRangeValue = this.SearchNameData(target);
+
+        if (nameRangeValue != "")
+            target = nameRangeValue;
+
         let targetPair = target.split("!");
         let workSheet : xlsx.WorkSheet;
         target = targetPair[0];
@@ -72,15 +83,11 @@ export class XLSXParser {
         return {worksheet :workSheet, directory : directory, targetVariable : target};
     }
 
-    public SearchVariableArray(target : string, directory:string = null, root_target :string = null) : ColumnInfoArray { 
+    public SearchVariableArray(target : string, directory:string = null) : ColumnInfoArray { 
         try {
             let directoryInfo = this.FilterDirectoryInfo(target, directory);
 
             if (directoryInfo.targetVariable.indexOf(':') > 0) {
-
-                //root_target is required, for array variable
-                if (root_target == null) return null;
-
                 let arrayPair = directoryInfo.targetVariable.split(":");
 
                 return this.GetColumnArray(directoryInfo.worksheet, directoryInfo.directory, arrayPair[0], arrayPair[1]);
@@ -92,10 +99,13 @@ export class XLSXParser {
         return null;
     }
 
-    public SearchVariable(target : string, directory:string = null, root_target :string = null) : number {
+    public SearchVariable(target : string, directory:string, root_target :string) : number {
         
-        try {
+        // try {
             let directoryInfo = this.FilterDirectoryInfo(target, directory);
+
+            console.log("directoryInfo.targetVariable " + directoryInfo.targetVariable);
+            console.log("root_target " + root_target);
 
             if (directoryInfo.targetVariable.indexOf(':') > 0) {
                 //root_target is required, for array variable
@@ -114,15 +124,15 @@ export class XLSXParser {
 
             let columnInfo : ColumnInfo = this.ParseColumnInfo(directoryInfo.worksheet, encodeVar);
 
-            return this.ParseVariableResult(columnInfo, directoryInfo.directory);
-        } catch{
-            console.error(`SearchVariable Error, target ${target}, directory  ${directory}`);
-        }
+            return this.ParseVariableResult(columnInfo, directoryInfo.directory, encodeVar);
+        // } catch{
+        //     console.error(`SearchVariable Error, target ${target}, directory  ${directory}`);
+        // }
 
         return 0;
     }
   
-    private ParseVariableResult(columnInfo : ColumnInfo, directory:string) : number {
+    private ParseVariableResult(columnInfo : ColumnInfo, directory:string, root_target :string) : number {
         if (columnInfo.t == "s") return 0;
 
         if (columnInfo.t == "n") {
@@ -132,10 +142,14 @@ export class XLSXParser {
                 //Its a function
                 if (columnInfo.f.indexOf("(") >= 0) {
                     console.log("ParseVariableResult : This is function");
+                    console.log(columnInfo);
+                    console.log("root_target " + root_target);
+
+                    let functionResult = this.ProcessFunctions(columnInfo.f, directory, root_target);
 
                     return 0;
                 }
-                return this.SearchVariable(columnInfo.f, directory);
+                return this.SearchVariable(columnInfo.f, directory, root_target);
             }
 
             return Number(columnInfo.v);
@@ -201,8 +215,59 @@ export class XLSXParser {
 
         if (indexOffSet < 0) return 0;
 
-        return this.ParseVariableResult(columnIArray.columnArray[(arrayLength-1) - indexOffSet], columnIArray.directory);
+        return this.ParseVariableResult(columnIArray.columnArray[(arrayLength-1) - indexOffSet], columnIArray.directory, RootColumnTarget);
         //Two decimal
         //Math.round(((total / arrayLength) + Number.EPSILON) * 100) / 100
     }
+
+    private FindAllArrayValue(columnIArray : ColumnInfoArray) : number[] {
+        let answerArray : number[] = [];
+
+        for (let i = 0; i < columnIArray.columnArray.length; i++) {
+            answerArray.push( this.SearchVariable(columnIArray.columnArray[i].f, columnIArray.directory, columnIArray.columnArray[i].f) );
+        }
+
+        return answerArray;
+    }
+
+    private ProcessFunctions(p_function : string, p_root_directory : string, p_root_column : string) : number {
+        console.log("Raw Function : " + p_function);
+        let tokens = this.mathParserJS.GetTokens(p_function);
+        let tokenLength = tokens.length;
+
+        let isArrayParam = false;
+
+        console.log("Pre ProcessFunctions");
+        console.log(tokens);
+
+        for (let i = tokenLength - 1; i >= 0; i--) {
+            if (tokens[i]._type == Types.Function) {
+                isArrayParam = FunctionLookUpTable[tokens[i]._value] == -1;
+                continue;
+            }
+
+            if (tokens[i]._type == Types.Variable) {
+                if (isArrayParam) {
+                    let rawArrayValue = this.SearchVariableArray(p_function, p_root_directory);
+                    let arrayValue = this.FindAllArrayValue(rawArrayValue);
+
+                    let arrayLength = arrayValue.length;
+                    tokens = ArrayRemove(tokens, i);
+
+                    for (let x = arrayLength - 1; x >= 0; x--) {
+                        tokens = ArrayInsert(tokens, i, new Token(arrayValue[i].toString(), Types.Number));
+                    }
+                } else {
+                    tokens[i]._type = Types.Number;
+                    tokens[i]._value = this.SearchVariable(tokens[i]._value, p_root_directory, tokens[i]._value).toString();
+                }
+            }
+        }
+        console.log("Post ProcessFunctions");
+        console.log(tokens);
+
+
+        return 0;
+    }
+
 }

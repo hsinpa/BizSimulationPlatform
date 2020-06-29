@@ -2,6 +2,7 @@ export enum Types {
     Number,
     Variable,
     Operator,
+    LogicOperator,
     LeftParenthesis,
     RightParenthesis,
     ArgumentSeperator,

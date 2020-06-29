@@ -2,7 +2,7 @@ import {Tokenizer} from '../Token/Tokenizer';
 import {Token, Types} from '../Token/Token';
 import {Stack} from 'typescript-collections';
 import {FunctionLookUpTable, StaticDataSet} from '../Utility/StaticDataSet';
-import {ComputeOperatorToken, ComputeFunctionToken} from '../Utility/MathOpCollection';
+import {ComputeOperatorToken, ComputeFunctionToken, AnalyzeStringOperator} from '../Utility/MathOpCollection';
 
 export class ASTTreeParser {
 
@@ -29,6 +29,14 @@ export class ASTTreeParser {
 
                     outputStack.add(ComputeOperatorToken(t, leftInput, rightInput));
                 }
+
+                else if (t._type == Types.LogicOperator) {
+                    let rightInput = outputStack.pop(),
+                        leftInput = outputStack.pop();
+
+                    outputStack.add(AnalyzeStringOperator(t._value, rightInput, leftInput));
+                }
+
                 else if (t._type == Types.Function) {
                     if (FunctionLookUpTable.hasOwnProperty(t._value))
                     {

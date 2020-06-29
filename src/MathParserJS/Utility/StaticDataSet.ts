@@ -4,11 +4,12 @@ export const StaticDataSet = {
     IgnoreSpace :  "\\s",
     IsNumber : "\\d",
     IsOperator : "\\+|-|\\*|\\/|\\^",
-    IsVariable : "[a-z!<>=]",
+    IsVariable : "[a-zA-Z]",
 
     RexIsNum : RegExp("\\d"),
     RexIsOperator : RegExp("\\+|-|\\*|\\/|\\^"),
-    RexIsVariable : RegExp("[a-z!<>=]"),
+    RexIsVariable : RegExp("[a-zA-Z]"),
+    RexIsLogicOperator : RegExp("\\>|\\<|\\="),
     FunctionEndSign : ";"
 }
 
@@ -55,7 +56,7 @@ export const FunctionLookUpTable : { [id: string] : number; } = {
     "clamp": 3,
     "lerp" :3,
     "smoothstep": 3,
-    "if" : 3,
+    "If" : 3,
 
     //Customize Array size
     "min": -1,

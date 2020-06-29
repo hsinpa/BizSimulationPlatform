@@ -30,15 +30,18 @@ export class Tokenizer {
             let length = letterBuffer.length;
             let r_tokens : Token[] = [] ;
     
-            for (let i = 0; i < length; i++) {
-                r_tokens.push(new Token(letterBuffer[i], Types.Variable));
+            // for (let i = 0; i < length; i++) {
+            //     r_tokens.push(new Token(letterBuffer[i], Types.Variable));
     
-                //Multiply letter variable together
-                if (i < length - 1) {
-                    r_tokens.push(new Token("*", Types.Operator));
-                }
-            }
-    
+            //     //Multiply letter variable together
+            //     if (i < length - 1) {
+            //         r_tokens.push(new Token("*", Types.Operator));
+            //     }
+            // }
+
+            if (length > 0)
+                r_tokens.push(new Token(this.GetFullLetterString(letterBuffer), Types.Variable));
+                
             letterBuffer = [];
     
             return r_tokens;
@@ -49,6 +52,13 @@ export class Tokenizer {
             let part = p_raw_expression[i];
 
             if (this.IsNumber(part)) {
+
+                if (letterBuffer.length > 0) {
+
+                    letterBuffer.push(part);
+                    continue;
+                }
+
                 numberBuffer.push(part);
                 continue;
             }
@@ -91,6 +101,21 @@ export class Tokenizer {
                 continue;
             }
 
+            if (this.IsLogicOperator(part)) {
+                let tokenCount = tokens.length;
+
+                if (tokenCount > 0 && tokens[tokenCount - 1]._type == Types.LogicOperator) {
+                   tokens[tokenCount - 1]._value += part;
+                   continue;
+               }
+
+               tokens = tokens.concat(RetrieveNumberBuffer());
+               tokens = tokens.concat(RetrieveLetterBuffer());
+
+               tokens.push(new Token(part, Types.LogicOperator));
+               continue;
+            }
+
             if (this.IsLeftParenthesis(part)) {
                 //If the char before leftParenthesis is letter, its  a function
                 if (letterBuffer.length > 0) {
@@ -98,7 +123,7 @@ export class Tokenizer {
                     letterBuffer = [];
                 } else if (numberBuffer.length > 0) {
                     tokens = tokens.concat(RetrieveNumberBuffer());
-                    tokens.push(new Token("*", Types.LeftParenthesis));
+                    tokens.push(new Token("*", Types.Operator));
                 }
                 tokens.push(new Token(part, Types.LeftParenthesis));
 
@@ -152,6 +177,10 @@ export class Tokenizer {
     
     private IsOperator(p_char : string) : boolean {
         return StaticDataSet.RexIsOperator.test(p_char)
+    }
+
+    private IsLogicOperator(p_char : string) : boolean {
+        return StaticDataSet.RexIsLogicOperator.test(p_char)
     }
     
     private IsRightParenthesis(p_char : string) : boolean {

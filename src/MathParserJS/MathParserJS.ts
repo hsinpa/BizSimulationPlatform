@@ -16,7 +16,21 @@ export class MathParserJS {
 
     public Calculate(p_raw_expression:string) : number {
 
-        p_raw_expression = p_raw_expression.toLowerCase();
+        let organzieTokens = this.GetTokens(p_raw_expression);
+
+        let answer = this._astTreeParser.Parse(organzieTokens);
+        
+        return answer;
+    }
+
+    public CalculateWithToken(p_tokens : Token[]) : number {
+        let answer = this._astTreeParser.Parse(p_tokens);
+        
+        return answer;
+    }
+
+    public GetTokens(p_raw_expression:string) : Token[] {
+        p_raw_expression = this.CleanUpExpression(p_raw_expression);
 
         let tokens = this._tokenizer.Parse(p_raw_expression);
         console.log(tokens);
@@ -24,10 +38,14 @@ export class MathParserJS {
         let organzieTokens = this._shuntingYard.Parse(tokens);
 
         console.log(organzieTokens);
-
-        let answer = this._astTreeParser.Parse(organzieTokens);
         
-        return answer;
+        return organzieTokens;
+    }
+
+    private CleanUpExpression(p_raw_expression:string) {
+        //p_raw_expression = p_raw_expression.toLowerCase();
+
+        return p_raw_expression;
     }
 
 }

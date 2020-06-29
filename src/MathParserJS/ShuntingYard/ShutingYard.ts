@@ -40,7 +40,7 @@ export class ShuntingYard {
             }
 
             //if the token is an operator, then:
-            else if (t._type == Types.Operator)
+            else if (t._type == Types.Operator || t._type == Types.LogicOperator)
             {
                 //while there is an operator token o2, at the top of the operator stack and either
                 while (operatorStack.size() > 0 &&

@@ -83,6 +83,10 @@ export class XLSXParser {
         return {worksheet :workSheet, directory : directory, targetVariable : target};
     }
 
+    public SearchColumnID(id : string, directory:string) : number {
+        return this.SearchVariable(id, directory, id);
+    }
+
     public SearchVariableArray(target : string, directory:string = null) : ColumnInfoArray { 
         try {
             let directoryInfo = this.FilterDirectoryInfo(target, directory);
@@ -99,7 +103,7 @@ export class XLSXParser {
         return null;
     }
 
-    public SearchVariable(target : string, directory:string, root_target :string) : number {
+    private SearchVariable(target : string, directory:string, root_target :string) : number {
         
         // try {
             let directoryInfo = this.FilterDirectoryInfo(target, directory);
@@ -147,7 +151,7 @@ export class XLSXParser {
 
                     let functionResult = this.ProcessFunctions(columnInfo.f, directory, root_target);
 
-                    return 0;
+                    return functionResult;
                 }
                 return this.SearchVariable(columnInfo.f, directory, root_target);
             }
@@ -266,8 +270,7 @@ export class XLSXParser {
         console.log("Post ProcessFunctions");
         console.log(tokens);
 
-
-        return 0;
+        return this.mathParserJS.CalculateWithToken(tokens);
     }
 
 }

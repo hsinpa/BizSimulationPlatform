@@ -8,6 +8,8 @@ export class MathParserJS {
     private _shuntingYard : ShuntingYard;
     private _astTreeParser : ASTTreeParser;
 
+    public roundToDigit = 3;
+
     public constructor() { 
         this._tokenizer = new Tokenizer();
         this._shuntingYard = new ShuntingYard();
@@ -20,13 +22,13 @@ export class MathParserJS {
 
         let answer = this._astTreeParser.Parse(organzieTokens);
         
-        return answer;
+        return +answer.toFixed(this.roundToDigit);
     }
 
     public CalculateWithToken(p_tokens : Token[]) : number {
         let answer = this._astTreeParser.Parse(p_tokens);
-        
-        return answer;
+
+        return +answer.toFixed(this.roundToDigit);
     }
 
     public GetTokens(p_raw_expression:string) : Token[] {

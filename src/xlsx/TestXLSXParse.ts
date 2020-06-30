@@ -12,27 +12,31 @@ export class TestXLSXParser {
     }
 
     public ExecuteAllTestCase() {
-        this.TestMultiVariableSheetName('zTurnFreeLancer');
-        this.TestMultiVariableSheetNameArray('zTurnFreeLancer');
+        //this.TestMultiVariableSheetName('DataSheet!D8');
+        //this.TestMultiVariableSheetNameArray('zTurnFreeLancer');
+        //this.TestNameRange("DataSheet!E7");
         this.TestSimpleFunction('DataSheet!G8');
     }
 
-    public TestMultiVariableSheetName(VariableName : string) {
-        let nameDataResult = this.XLSXParser.SearchNameData(VariableName);
+    public TestNameRange(NameRangeColumn : string) {
+        let variableResult = this.XLSXParser.SearchColumnID(NameRangeColumn, null);        
+        console.log("variableResult " + variableResult);
+    }
 
-        let variableResult = this.XLSXParser.SearchVariable(nameDataResult, 'DataSheet', "D8");        
+    public TestMultiVariableSheetName(VariableName : string) {
+        let variableResult = this.XLSXParser.SearchColumnID(VariableName, null);        
     }
     
     public TestMultiVariableSheetNameArray(VariableName : string) {
         let nameDataResult = this.XLSXParser.SearchNameData(VariableName);
 
-        let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");                
+        let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet');                
     }
 
     public TestSimpleFunction(VariableName : string) {
-        console.log(VariableName);
-
-        let variableResult = this.XLSXParser.SearchVariable(VariableName, null, "G8");        
+        let variableResult = this.XLSXParser.SearchColumnID(VariableName, null);     
+        
+        console.log("TestSimpleFunction " + variableResult);
 
         //let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");
                 

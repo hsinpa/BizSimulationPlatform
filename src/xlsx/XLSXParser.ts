@@ -235,7 +235,7 @@ export class XLSXParser {
     }
 
     private ProcessFunctions(p_function : string, p_root_directory : string, p_root_column : string) : number {
-        console.log("Raw Function : " + p_function);
+        //console.log("Raw Function : " + p_function);
         let tokens = this.mathParserJS.GetTokens(p_function);
         let tokenLength = tokens.length;
 

@@ -35,30 +35,39 @@ export const PrecedenceDict : { [id: string] : number; } = {
 /// int = needed input length
 /// </summary>
 export const FunctionLookUpTable : { [id: string] : number; } = {
-    "sin": 1,
-    "cos": 1,
-    "tan": 1,
-    "arcsine": 1,
-    "arccos": 1,
-    "atan": 1,
-    "sqrt": 1,
-    "abs":1,
-    "floor":1,
-    "ceil": 1,
-    "round": 1,
-    "sign": 1,
+    "SIN": 1,
+    "COS": 1,
+    "TAN": 1,
+    "ASIN": 1,
+    "ACOS": 1,
+    "ATAN": 1,
+    "SQRT": 1,
+    "ABS":1,
+    "FLOOR":1,
+    "CEILING": 1,
+    "ROUND": 1,
+    "SIGN": 1,
+    "NORMSDIST":1, 
 
-    "step" : 2,
-    "rand": 2,
-    "atan2": 2,
-    "pow": 2,
+    "STEP" : 2,
+    "RAND": 2,
+    "ATAN2": 2,
+    "POW": 2,
 
-    "clamp": 3,
-    "lerp" :3,
-    "smoothstep": 3,
+    "CLAMP": 3,
+    "LERP" :3,
+    "SMOOTHSTEP": 3,
     "If" : 3,
 
+    "NORMDIST" : 4,
+
     //Customize Array size
-    "min": -1,
-    "max": -1,
+    "MIN": -1,
+    "MAX": -1,
 };
+
+export const PredefineVariableSet : { [id: string] : number; } = { 
+    "TRUE": 1,
+    "FALSE" : 0,
+    "PI" : 3.141597
+}

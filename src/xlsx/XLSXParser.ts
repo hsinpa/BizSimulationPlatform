@@ -2,8 +2,10 @@ import * as xlsx from 'xlsx';
 import {Dictionary} from 'typescript-collections';
 import {MathParserJS} from '../MathParserJS/MathParserJS'
 import { Types, Token } from '../MathParserJS/Token/Token';
-import {FunctionLookUpTable} from '../MathParserJS/Utility/StaticDataSet';
+import {FunctionLookUpTable, PredefineVariableSet} from '../MathParserJS/Utility/StaticDataSet';
 import {ArrayInsert, ArrayRemove} from '../Other/UtilityMethod';
+
+
 
 interface ColumnInfo {
     t: string,
@@ -251,22 +253,39 @@ export class XLSXParser {
             }
 
             if (tokens[i]._type == Types.Variable) {
+
+                //If function accept array, and the variable is array type
                 if (isArrayParam) {
                     let rawArrayValue = this.SearchVariableArray(p_function, p_root_directory);
-                    let arrayValue = this.FindAllArrayValue(rawArrayValue);
 
-                    let arrayLength = arrayValue.length;
-                    tokens = ArrayRemove(tokens, i);
+                    if (rawArrayValue != null) {
 
-                    for (let x = arrayLength - 1; x >= 0; x--) {
-                        tokens = ArrayInsert(tokens, i, new Token(arrayValue[i].toString(), Types.Number));
+                        let arrayValue = this.FindAllArrayValue(rawArrayValue);
+
+                        let arrayLength = arrayValue.length;
+                        tokens = ArrayRemove(tokens, i);
+    
+                        for (let x = arrayLength - 1; x >= 0; x--) {
+                            tokens = ArrayInsert(tokens, i, new Token(arrayValue[i].toString(), Types.Number));
+                        }
+                        
+                        continue;
                     }
-                } else {
-                    tokens[i]._type = Types.Number;
-                    tokens[i]._value = this.SearchVariable(tokens[i]._value, p_root_directory, tokens[i]._value).toString();
                 }
+
+                //Const Variable
+                if (PredefineVariableSet.hasOwnProperty(tokens[i]._value)) {
+                    tokens[i]._type = Types.Number;
+                    tokens[i]._value = PredefineVariableSet[tokens[i]._value].toString();
+                    
+                    continue;
+                }
+
+                tokens[i]._type = Types.Number;
+                tokens[i]._value = this.SearchVariable(tokens[i]._value, p_root_directory, tokens[i]._value).toString();
             }
         }
+
         console.log("Post ProcessFunctions");
         console.log(tokens);
 

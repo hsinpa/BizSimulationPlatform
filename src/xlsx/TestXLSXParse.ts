@@ -15,7 +15,9 @@ export class TestXLSXParser {
         //this.TestMultiVariableSheetName('DataSheet!D8');
         //this.TestMultiVariableSheetNameArray('zTurnFreeLancer');
         //this.TestNameRange("DataSheet!E7");
-        this.TestSimpleFunction('DataSheet!G8');
+        //this.TestSimpleFunction('DataSheet!G8');
+
+        this.TestCumulativeNomralDist('FormulaSheet!E3');
     }
 
     public TestNameRange(NameRangeColumn : string) {
@@ -41,4 +43,14 @@ export class TestXLSXParser {
         //let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");
                 
     }
+
+    public TestCumulativeNomralDist(VariableName : string) {
+        let variableResult = this.XLSXParser.SearchColumnID(VariableName, null);     
+        
+        console.log("TestSimpleFunction " + variableResult);
+
+        //let variableResult = this.XLSXParser.SearchVariableArray(nameDataResult, 'DataSheet', "D8");
+                
+    }
+
 } 

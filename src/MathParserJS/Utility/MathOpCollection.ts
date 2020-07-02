@@ -1,5 +1,6 @@
 
 import {Token, Types} from '../Token/Token';
+import {CumulativeNormalDist, NormalDist} from './ComplexExcelFormula';
 
 export function ComputeOperatorToken(token : Token, leftInput : number, rightInput : number) : number{
     switch (token._value)
@@ -76,71 +77,70 @@ export function ComputeFunctionToken(token : Token, input : number[]) : number
     switch (token._value)
     {
         //#region Function with ONE input
-        case "sin":
+        case "SIN":
             return Math.sin(input[0]);
 
-        case "cos":
+        case "COS":
             return Math.cos(input[0]);
 
-        case "tan":
+        case "TAN":
             return Math.tan(input[0]);
 
-        case "arcsine":
+        case "ASIN":
             return Math.asin(input[0]);
 
-        case "arccos":
+        case "ACOS":
             return Math.acos(input[0]);
 
-        case "atan":
+        case "ATAN":
             return Math.atan(input[0]);
 
-        case "sqrt":
+        case "SQRT":
             return Math.sqrt(input[0]);
 
-        case "abs":
+        case "ABS":
             return Math.abs(input[0]);
 
-        case "floor":
+        case "FLOOR":
             return Math.floor(input[0]);
 
-        case "ceil":
+        case "CEILING":
             return Math.ceil(input[0]);
 
-        case "round":
+        case "ROUND":
             return Math.round(input[0]);
 
-        case "sign":
+        case "SIGN":
             return Math.sign(input[0]);
+
+        case "NORMSDIST": {
+            return NormalDist(input[0]);
+        }
+    
         //#endregion
 
         //#region Function with Two inputs
         case "rand":
             return Math.random() * (input[1] - input[0]) + input[0];
 
-        case "min":
-            return Math.min(...input);
-
-        case "max":
-            return Math.max(...input);
-
-        case "atan2":
+        case "ATAN2":
             return Math.atan2(input[0], input[1]);
 
-        case "pow":
+        case "POW":
             return Math.pow(input[0], input[1]);
 
-        case "step":
+        case "STEP":
             return input[1] >= input[0] ? 1 : 0;
         //#endregion
 
         //#region Function with THREE input
-        case "clamp":
+        case "CLAMP":
             return  Math.min(Math.max(input[1], input[0]), input[2])
 
-        case "lerp":
+        case "LERP":
             return input[0] + (input[2] * (input[1] - input[0]));
 
-        case "smoothstep":
+        case "SMOOTHSTEP":
             var x = Math.max(0, Math.min(1, (input[0]-input[1])/(input[2]-input[1])));
             return x*x*(3 - 2*x);
 
@@ -149,6 +149,19 @@ export function ComputeFunctionToken(token : Token, input : number[]) : number
         }
         break;
         //#endregion
+
+//#region Function with FOUR input
+        case "NORMDIST": {
+            return CumulativeNormalDist(input[0], input[1], input[2], input[3]);
+        }
+
+//#endregion
+
+        case "MIN":
+            return Math.min(...input);
+
+        case "MAX":
+            return Math.max(...input);
 
 
         default:
